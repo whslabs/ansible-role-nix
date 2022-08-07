@@ -1,22 +1,29 @@
 ---
 # tasks file for role-nix
-- name: Create nix temporary directory
-  ansible.builtin.tempfile:
-    state: directory
-    suffix: nix
-  register: nix_tmpdir
-- name: Download nix
-  ansible.builtin.unarchive:
-    dest: "{{ nix_tmpdir.path }}"
-    remote_src: yes
-    src: https://releases.nixos.org/nix/nix-{{ nix_version }}/nix-{{ nix_version }}-x86_64-linux.tar.xz
+- name: Get nix stats
+  ansible.builtin.stat:
+    path: /nix/
+  register: nix_st
 - name: Install nix
-  ansible.builtin.shell: sh {{ nix_tmpdir.path }}/nix-{{ nix_version }}-x86_64-linux/install --no-daemon
-- name: Remove nix temporary directory
-  ansible.builtin.file:
-    path: "{{ nix_tmpdir.path }}"
-    state: absent
-  when: nix_tmpdir.path is defined
+  block:
+  - name: Create nix temporary directory
+    ansible.builtin.tempfile:
+      state: directory
+      suffix: nix
+    register: nix_tmpdir
+  - name: Download nix
+    ansible.builtin.unarchive:
+      dest: "{{ nix_tmpdir.path }}"
+      remote_src: yes
+      src: https://releases.nixos.org/nix/nix-{{ nix_version }}/nix-{{ nix_version }}-x86_64-linux.tar.xz
+  - name: Install nix
+    ansible.builtin.shell: sh {{ nix_tmpdir.path }}/nix-{{ nix_version }}-x86_64-linux/install --no-daemon
+  - name: Remove nix temporary directory
+    ansible.builtin.file:
+      path: "{{ nix_tmpdir.path }}"
+      state: absent
+    when: nix_tmpdir.path is defined
+  when: nix_st.stat.isdir is not defined
 - name: Enable flakes
   ansible.builtin.lineinfile:
     create: yes
