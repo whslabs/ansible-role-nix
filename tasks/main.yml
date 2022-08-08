@@ -14,10 +14,11 @@
   - name: Download nix
     ansible.builtin.unarchive:
       dest: "{{ nix_tmpdir.path }}"
+      extra_opts: [--strip-components=1]
       remote_src: yes
       src: https://releases.nixos.org/nix/nix-{{ nix_version }}/nix-{{ nix_version }}-x86_64-linux.tar.xz
   - name: Install nix
-    ansible.builtin.shell: sh {{ nix_tmpdir.path }}/nix-{{ nix_version }}-x86_64-linux/install --no-daemon
+    ansible.builtin.command: "{{ nix_tmpdir.path }}/install --no-daemon"
   - name: Remove nix temporary directory
     ansible.builtin.file:
       path: "{{ nix_tmpdir.path }}"
