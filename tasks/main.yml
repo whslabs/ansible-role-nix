@@ -51,4 +51,4 @@
   become: yes
 - name: Set nix build
   ansible.builtin.set_fact:
-    nix_build: "{{ ansible_env.HOME }}/.nix-profile/bin/nix build"
+    shell_only_nix_build: ". {{ ansible_env.HOME }}/.nix-profile/etc/profile.d/nix.sh; nix build"
