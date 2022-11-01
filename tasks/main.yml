@@ -42,6 +42,7 @@
       =
       https://cache.nixos.org
       https://hydra.iohk.io
+      https://iohk.cachix.org
 
       trusted-public-keys
       =
